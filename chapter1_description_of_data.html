@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 1 – Description of Data | Probability & Statistics</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0d;
+    --cream: #faf7f2;
+    --accent: #e84d2a;
+    --gold: #f0b429;
+    --teal: #0d9488;
+    --blue: #1d4ed8;
+    --soft: #f3ede3;
+    --muted: #7a7060;
+    --card-bg: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ── FLOATING PARTICLES ── */
+  #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.08;
+    animation: drift linear infinite;
+  }
+
+  @keyframes drift {
+    0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.08; }
+    90%  { opacity: 0.08; }
+    100% { transform: translateY(-120px) rotate(720deg); opacity: 0; }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 2rem 6rem;
+    background: linear-gradient(145deg, #0d0d0d 0%, #1a1208 50%, #0d1a14 100%);
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 30%, rgba(240,180,41,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 70%, rgba(13,148,136,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 60% 20%, rgba(232,77,42,0.12) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(240,180,41,0.15);
+    border: 1px solid rgba(240,180,41,0.4);
+    color: var(--gold);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    padding: 0.4rem 1rem;
+    border-radius: 2rem;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    animation: fadeUp 0.9s 0.1s ease both;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 10vw, 7rem);
+    font-weight: 900;
+    line-height: 1.0;
+    color: #fff;
+    animation: fadeUp 1s 0.2s ease both;
+  }
+
+  .hero h1 span { color: var(--gold); }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    color: rgba(255,255,255,0.6);
+    max-width: 620px;
+    margin: 1.5rem auto 0;
+    line-height: 1.7;
+    animation: fadeUp 1s 0.35s ease both;
+    font-weight: 300;
+  }
+
+  /* animated chart bars in hero */
+  .hero-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    margin-top: 3rem;
+    height: 60px;
+    animation: fadeUp 1s 0.5s ease both;
+  }
+  .hero-bars .b {
+    width: 10px;
+    border-radius: 3px 3px 0 0;
+    background: linear-gradient(to top, var(--teal), var(--gold));
+    animation: growBar 1.5s 1s ease both;
+  }
+  @keyframes growBar {
+    from { height: 4px; opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    animation: fadeIn 2s 1.5s ease both;
+  }
+  .scroll-hint .arrow { width: 2px; height: 32px; background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+  @keyframes scrollPulse { 0%,100%{opacity:0.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(6px)} }
+
+  /* ── SECTION WRAPPER ── */
+  .page { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1; }
+
+  /* ── SECTION TITLES ── */
+  .sec-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .sec-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+  .divider { width: 48px; height: 4px; border-radius: 2px; background: var(--gold); margin: 1rem 0 2rem; }
+
+  /* ── INTRO SECTION ── */
+  .intro-section {
+    padding: 6rem 0 4rem;
+    background: var(--cream);
+  }
+
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    margin-top: 2rem;
+  }
+
+  .intro-text p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: #3a3530;
+    margin-bottom: 1.2rem;
+  }
+
+  /* data type visual */
+  .dtype-visual {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+  .dtype-visual::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(240,180,41,0.1);
+  }
+
+  .dtype-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #e8e2d9;
+    animation: slideRight 0.6s ease both;
+  }
+  .dtype-row:last-child { border-bottom: none; }
+  .dtype-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .dtype-name { font-weight: 600; font-size: 0.9rem; }
+  .dtype-desc { font-size: 0.8rem; color: var(--muted); }
+
+  @keyframes slideRight { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* ── MEASURES SECTION ── */
+  .measures-section {
+    padding: 5rem 0;
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+  .measures-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 80% 50%, rgba(13,148,136,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .measures-section .sec-title { color: #fff; }
+  .measures-section .sec-label { color: var(--teal); }
+  .measures-section p { color: rgba(255,255,255,0.6); }
+
+  .measures-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .m-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.8rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, background 0.3s ease;
+    cursor: default;
+  }
+  .m-card:hover {
+    transform: translateY(-6px);
+    background: rgba(255,255,255,0.09);
+  }
+  .m-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 0 0 16px 16px;
+  }
+  .m-card.ct::after { background: var(--gold); }
+  .m-card.disp::after { background: var(--teal); }
+  .m-card.shape::after { background: var(--accent); }
+
+  .m-icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
+  .m-card h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: #fff; margin-bottom: 0.7rem; }
+  .m-card p { font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.7; }
+
+  .formula-chip {
+    display: inline-block;
+    background: rgba(240,180,41,0.15);
+    border: 1px solid rgba(240,180,41,0.3);
+    color: var(--gold);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin: 4px 3px 0;
+  }
+
+  /* ── MEAN ANIMATION ── */
+  .mean-demo {
+    background: var(--soft);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-top: 2rem;
+    overflow: hidden;
+  }
+  .mean-demo h4 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 1.2rem; }
+  .number-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .num-ball {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #fff;
+    animation: popIn 0.4s ease both;
+  }
+  @keyframes popIn { from {transform:scale(0);opacity:0} to {transform:scale(1);opacity:1} }
+  .mean-result {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    color: var(--ink);
+    background: #fff;
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    border-left: 4px solid var(--teal);
+  }
+
+  /* ── QUARTILES / BOX PLOT ── */
+  .quartile-section {
+    padding: 5rem 0;
+    background: var(--cream);
+  }
+
+  .boxplot-container {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.07);
+  }
+
+  .boxplot-svg-wrap { overflow-x: auto; }
+
+  svg.boxplot { width: 100%; max-width: 700px; height: 120px; display: block; margin: 0 auto; }
+
+  /* ── HISTOGRAM SECTION ── */
+  .histogram-section {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #0d1a14 0%, #0d1224 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .histogram-section .sec-title { color: #fff; }
+  .histogram-section .sec-label { color: var(--gold); }
+
+  .hist-wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 200px;
+    margin-top: 2rem;
+    padding: 0 1rem;
+  }
+  .hist-bar {
+    flex: 1;
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    min-width: 18px;
+    animation: histGrow 1s ease both;
+    cursor: pointer;
+    transition: filter 0.2s;
+  }
+  .hist-bar:hover { filter: brightness(1.2); }
+  .hist-bar .bar-label {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.7);
+    white-space: nowrap;
+  }
+  @keyframes histGrow {
+    from { height: 0 !important; opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .hist-x-labels {
+    display: flex;
+    gap: 3px;
+    padding: 0.5rem 1rem 0;
+  }
+  .hist-x-labels span {
+    flex: 1;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.4);
+    min-width: 18px;
+  }
+
+  /* ── SKEWNESS SECTION ── */
+  .skew-section {
+    padding: 5rem 0;
+    background: var(--soft);
+  }
+
+  .skew-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .skew-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    transition: transform 0.3s;
+  }
+  .skew-card:hover { transform: translateY(-8px); }
+  .skew-card h4 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .skew-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+
+  svg.skew-curve { width: 100%; height: 80px; margin-bottom: 1rem; }
+
+  /* ── QQ PLOT SECTION ── */
+  .qq-section {
+    padding: 5rem 0;
+    background: var(--ink);
+    color: #fff;
+  }
+  .qq-section .sec-title { color: #fff; }
+  .qq-section .sec-label { color: var(--accent); }
+
+  .qq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-top: 2rem; }
+  .qq-text p { color: rgba(255,255,255,0.65); line-height: 1.8; margin-bottom: 1rem; font-size: 0.95rem; }
+
+  .qq-plot-wrap {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  svg.qq-plot { width: 100%; height: 240px; }
+
+  /* ── CV / VARIATION ── */
+  .cv-section {
+    padding: 5rem 0;
+    background: var(--cream);
+  }
+
+  .cv-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .cv-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    border-top: 4px solid var(--gold);
+  }
+  .cv-card.v2 { border-top-color: var(--teal); }
+  .cv-card h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 0.8rem; }
+  .cv-card p { font-size: 0.9rem; line-height: 1.75; color: #3a3530; }
+
+  /* ── PROGRESS BAR CV ── */
+  .cv-bar-wrap { margin-top: 1.5rem; }
+  .cv-bar-label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; }
+  .cv-bar-track { background: #eee; border-radius: 4px; height: 10px; overflow: hidden; margin-bottom: 10px; }
+  .cv-bar-fill { height: 100%; border-radius: 4px; animation: fillBar 1.5s ease both; }
+  @keyframes fillBar { from { width: 0 !important; } }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: #0d0d0d;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    padding: 2.5rem 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+  .footer span { color: var(--gold); }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(36px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── UTILITIES ── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .intro-grid, .measures-grid, .skew-grid, .qq-grid, .cv-cards { grid-template-columns: 1fr; }
+    .measures-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .measures-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── NAV ── */
+  .sticky-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(13,13,13,0.85);
+    backdrop-filter: blur(12px);
+    padding: 0.9rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; color: #fff; font-size: 1rem; }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 1.5rem; }
+  .nav-links a {
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- Floating Particles -->
+<div id="particles"></div>
+
+<!-- Sticky Nav -->
+<nav class="sticky-nav">
+  <div class="nav-logo">Chapter <span>01</span></div>
+  <div class="nav-links">
+    <a href="#intro">Data</a>
+    <a href="#measures">Measures</a>
+    <a href="#histogram">Histogram</a>
+    <a href="#skewness">Skewness</a>
+    <a href="#boxplot">Box Plot</a>
+    <a href="#qqplot">QQ Plot</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="badge">25EMAB104 · Probability & Statistics · Unit I</div>
+  <div class="hero-tag">Chapter 1 · 10 Hours</div>
+  <h1>Description<br>of <span>Data</span></h1>
+  <p class="hero-sub">
+    From raw numbers to meaningful insight — understand how data is categorized, summarized, and visualized using statistical measures and graphical tools.
+  </p>
+  <div class="hero-bars">
+    <div class="b" style="height:20px;animation-delay:1.0s"></div>
+    <div class="b" style="height:38px;animation-delay:1.1s"></div>
+    <div class="b" style="height:55px;animation-delay:1.2s"></div>
+    <div class="b" style="height:48px;animation-delay:1.3s"></div>
+    <div class="b" style="height:60px;animation-delay:1.4s"></div>
+    <div class="b" style="height:42px;animation-delay:1.5s"></div>
+    <div class="b" style="height:30px;animation-delay:1.6s"></div>
+    <div class="b" style="height:50px;animation-delay:1.7s"></div>
+    <div class="b" style="height:36px;animation-delay:1.8s"></div>
+    <div class="b" style="height:22px;animation-delay:1.9s"></div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll to explore</span>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+<!-- INTRO: What is Data & Types of Variables -->
+<section class="intro-section" id="intro">
+  <div class="page">
+    <div class="reveal">
+      <span class="sec-label">Section 1.1</span>
+      <h2 class="sec-title">What is Data &<br>Types of Variables</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="intro-grid">
+      <div class="intro-text reveal">
+        <p><strong>Data</strong> refers to a collection of facts, figures, or information gathered through observation, measurement, or experiment. It is the raw material of statistics — numbers, words, or measurements that must be organized and interpreted to yield knowledge.</p>
+        <p>In statistics, data is broadly classified into <strong>Qualitative (Categorical)</strong> and <strong>Quantitative (Numerical)</strong> types. Qualitative data describes categories or qualities (e.g., blood type, gender), while Quantitative data represents measurable quantities (e.g., height, temperature).</p>
+        <p><strong>Variables</strong> are characteristics that can take different values across observations. A variable can be <strong>Discrete</strong> (countable values — like number of children: 0, 1, 2…) or <strong>Continuous</strong> (any value in a range — like weight: 65.4 kg, 65.41 kg…).</p>
+        <p>Further classification includes <strong>Nominal</strong> (labels without order: colors, names), <strong>Ordinal</strong> (ordered categories: rankings), <strong>Interval</strong> (equal gaps, no true zero: temperature in °C), and <strong>Ratio</strong> (equal gaps + true zero: height, weight) scales.</p>
+      </div>
+      <div class="reveal">
+        <div class="dtype-visual">
+          <h4 style="font-family:'Playfair Display',serif;margin-bottom:1.2rem;font-size:1.1rem;">Variable Classification</h4>
+          <div class="dtype-row" style="animation-delay:0.1s"><span class="dtype-dot" style="background:#e84d2a"></span><div><div class="dtype-name">Nominal</div><div class="dtype-desc">Labels, no order · e.g. Blood Group (A, B, O, AB)</div></div></div>
+          <div class="dtype-row" style="animation-delay:0.2s"><span class="dtype-dot" style="background:#f0b429"></span><div><div class="dtype-name">Ordinal</div><div class="dtype-desc">Ordered categories · e.g. Education Level</div></div></div>
+          <div class="dtype-row" style="animation-delay:0.3s"><span class="dtype-dot" style="background:#0d9488"></span><div><div class="dtype-name">Interval</div><div class="dtype-desc">Equal gaps, no true zero · e.g. Temperature °C</div></div></div>
+          <div class="dtype-row" style="animation-delay:0.4s"><span class="dtype-dot" style="background:#1d4ed8"></span><div><div class="dtype-name">Ratio</div><div class="dtype-desc">Equal gaps + true zero · e.g. Height, Weight</div></div></div>
+          <div class="dtype-row" style="animation-delay:0.5s"><span class="dtype-dot" style="background:#8b5cf6"></span><div><div class="dtype-name">Discrete</div><div class="dtype-desc">Countable · e.g. No. of students: 25, 30…</div></div></div>
+          <div class="dtype-row" style="animation-delay:0.6s"><span class="dtype-dot" style="background:#ec4899"></span><div><div class="dtype-name">Continuous</div><div class="dtype-desc">Any value in range · e.g. 1.732 m, 1.7321 m…</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEASURES OF CENTRAL TENDENCY + DISPERSION -->
+<section class="measures-section" id="measures">
+  <div class="page">
+    <div class="reveal">
+      <span class="sec-label">Section 1.2 – 1.4</span>
+      <h2 class="sec-title" style="color:#fff;">Measures of Central<br>Tendency & Dispersion</h2>
+      <div class="divider"></div>
+    </div>
+
+    <!-- Live Mean Demo -->
+    <div class="mean-demo reveal">
+      <h4>🎯 Interactive: Mean Calculation</h4>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">Dataset: exam scores of 8 students</p>
+      <div class="number-row" id="numBalls"></div>
+      <div class="mean-result" id="meanResult"></div>
+    </div>
+
+    <div class="measures-grid" style="margin-top:2.5rem;">
+      <!-- CT -->
+      <div class="m-card ct reveal">
+        <span class="m-icon">📊</span>
+        <h3>Mean</h3>
+        <p>The <strong style="color:#f0b429">Arithmetic Mean</strong> is the sum of all observations divided by the number of observations. It uses every data value and is sensitive to outliers.</p>
+        <p style="margin-top:0.7rem;">The <strong style="color:#f0b429">Weighted Mean</strong> assigns different weights to values, useful when some data points matter more (e.g., CGPA calculation with credit hours as weights).</p>
+        <span class="formula-chip">x̄ = Σxᵢ / n</span>
+        <span class="formula-chip">x̄w = Σwᵢxᵢ / Σwᵢ</span>
+      </div>
+
+      <div class="m-card ct reveal" style="--d:0.1s">
+        <span class="m-icon">📍</span>
+        <h3>Median & Mode</h3>
+        <p>The <strong style="color:#f0b429">Median</strong> is the middle value when data is sorted. It is robust to outliers — ideal for skewed data like income or house prices.</p>
+        <p style="margin-top:0.7rem;">The <strong style="color:#f0b429">Mode</strong> is the most frequently occurring value. A dataset can be unimodal, bimodal, or multimodal. Mode is the only measure applicable to nominal data.</p>
+        <span class="formula-chip">M = (n+1)/2 th value</span>
+        <span class="formula-chip">Mode = most frequent</span>
+      </div>
+
+      <div class="m-card ct reveal" style="--d:0.2s">
+        <span class="m-icon">🔢</span>
+        <h3>Quartiles &<br>Percentiles</h3>
+        <p><strong style="color:#f0b429">Quartiles</strong> divide sorted data into 4 equal parts. Q1 (25th percentile), Q2 (Median, 50th), Q3 (75th). The <strong>IQR = Q3 – Q1</strong> measures the spread of the middle 50%.</p>
+        <p style="margin-top:0.7rem;"><strong style="color:#f0b429">Percentiles</strong> divide data into 100 equal parts. The 90th percentile means 90% of data falls below that value.</p>
+        <span class="formula-chip">IQR = Q3 − Q1</span>
+      </div>
+
+      <!-- Dispersion -->
+      <div class="m-card disp reveal">
+        <span class="m-icon">📐</span>
+        <h3>Variance &<br>Std. Deviation</h3>
+        <p><strong style="color:#0d9488">Variance (σ²)</strong> measures the average squared deviation from the mean. A higher variance means data is more spread out.</p>
+        <p style="margin-top:0.7rem;"><strong style="color:#0d9488">Standard Deviation (σ)</strong> is the square root of variance, expressed in the same units as the data. It is the most commonly used measure of spread.</p>
+        <span class="formula-chip">σ² = Σ(xᵢ−x̄)² / n</span>
+        <span class="formula-chip">σ = √σ²</span>
+      </div>
+
+      <div class="m-card disp reveal" style="--d:0.1s">
+        <span class="m-icon">📏</span>
+        <h3>Range & IQR</h3>
+        <p>The <strong style="color:#0d9488">Range</strong> is the simplest measure of spread: the difference between the largest and smallest values. It is easy to compute but highly sensitive to outliers.</p>
+        <p style="margin-top:0.7rem;"><strong style="color:#0d9488">Inter-Quartile Range (IQR)</strong> measures the spread of the central 50% of the data and is unaffected by extreme values. It is used to detect outliers via the fence method.</p>
+        <span class="formula-chip">Range = Max − Min</span>
+        <span class="formula-chip">Fence = Q3 + 1.5×IQR</span>
+      </div>
+
+      <div class="m-card shape reveal" style="--d:0.2s">
+        <span class="m-icon">📉</span>
+        <h3>Coefficient of<br>Variation</h3>
+        <p><strong style="color:#e84d2a">CV</strong> expresses the standard deviation as a percentage of the mean. It is a dimensionless number used to compare variability between datasets with different units or scales.</p>
+        <p style="margin-top:0.7rem;">Example: Comparing variability in exam scores (out of 100) vs test times (in seconds) — CV makes them comparable.</p>
+        <span class="formula-chip">CV = (σ / x̄) × 100%</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUARTILES & BOX PLOT -->
+<section class="quartile-section" id="boxplot">
+  <div class="page">
+    <div class="reveal">
+      <span class="sec-label">Section 1.5</span>
+      <h2 class="sec-title">Box Plot (Box & Whisker)</h2>
+      <div class="divider"></div>
+      <p style="max-width:680px;line-height:1.8;color:#3a3530;font-size:0.95rem;">A Box Plot is a graphical summary using five key statistics: <strong>Minimum, Q1, Median (Q2), Q3, and Maximum</strong>. The box spans Q1 to Q3 (the IQR), the line inside the box is the median, and the whiskers extend to the smallest/largest non-outlier values. Points beyond the fences are plotted as individual <strong>outlier dots</strong>.</p>
+    </div>
+    <div class="boxplot-container reveal">
+      <div class="boxplot-svg-wrap">
+        <svg class="boxplot" viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg">
+          <!-- axis -->
+          <line x1="50" y1="95" x2="660" y2="95" stroke="#ccc" stroke-width="1.5"/>
+          <!-- tick labels -->
+          <text x="80" y="112" text-anchor="middle" font-family="Space Mono" font-size="10" fill="#888">10</text>
+          <text x="180" y="112" text-anchor="middle" font-family="Space Mono" font-size="10" fill="#888">20</text>
+          <text x="330" y="112" text-anchor="middle" font-family="Space Mono" font-size="10" fill="#888">35</text>
+          <text x="470" y="112" text-anchor="middle" font-family="Space Mono" font-size="10" fill="#888">50</text>
+          <text x="610" y="112" text-anchor="middle" font-family="Space Mono" font-size="10" fill="#888">65</text>
+
+          <!-- whisker left -->
+          <line x1="80" y1="60" x2="180" y2="60" stroke="#0d9488" stroke-width="2.5" stroke-dasharray="5,3">
+            <animate attributeName="x2" from="80" to="180" dur="1s" fill="freeze"/>
+          </line>
+          <line x1="80" y1="48" x2="80" y2="72" stroke="#0d9488" stroke-width="2.5"/>
+
+          <!-- box IQR -->
+          <rect x="180" y="38" width="290" height="44" rx="6" fill="#e0f2f1" stroke="#0d9488" stroke-width="2.5">
+            <animate attributeName="width" from="0" to="290" dur="1.2s" fill="freeze"/>
+          </rect>
+
+          <!-- median line -->
+          <line x1="330" y1="38" x2="330" y2="82" stroke="#e84d2a" stroke-width="3">
+            <animate attributeName="y1" from="60" to="38" dur="0.8s" begin="0.8s" fill="freeze"/>
+            <animate attributeName="y2" from="60" to="82" dur="0.8s" begin="0.8s" fill="freeze"/>
+          </line>
+
+          <!-- whisker right -->
+          <line x1="470" y1="60" x2="610" y2="60" stroke="#0d9488" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <line x1="610" y1="48" x2="610" y2="72" stroke="#0d9488" stroke-width="2.5"/>
+
+          <!-- outlier -->
+          <circle cx="640" cy="60" r="5" fill="none" stroke="#e84d2a" stroke-width="2">
+            <animate attributeName="r" from="0" to="5" dur="0.5s" begin="1.5s" fill="freeze"/>
+          </circle>
+
+          <!-- labels -->
+          <text x="180" y="28" text-anchor="middle" font-family="Space Mono" font-size="9" fill="#0d9488">Q1=20</text>
+          <text x="330" y="28" text-anchor="middle" font-family="Space Mono" font-size="9" fill="#e84d2a">Median=35</text>
+          <text x="470" y="28" text-anchor="middle" font-family="Space Mono" font-size="9" fill="#0d9488">Q3=50</text>
+          <text x="640" y="28" text-anchor="middle" font-family="Space Mono" font-size="9" fill="#e84d2a">Outlier</text>
+          <text x="80" y="28" text-anchor="middle" font-family="Space Mono" font-size="9" fill="#666">Min=10</text>
+          <text x="610" y="28" text-anchor="middle" font-family="Space Mono" font-size="9" fill="#666">Max=65</text>
+        </svg>
+      </div>
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px dashed #e0d8ce;">
+        <p style="font-size:0.88rem;color:#3a3530;line-height:1.8;">The box plot above shows: minimum=10, Q1=20, Median=35, Q3=50, Maximum=65. The outlier at ~67 exceeds the upper fence (Q3 + 1.5×IQR = 50 + 1.5×30 = 95). IQR = Q3 − Q1 = 30. The median is closer to Q1, suggesting a slight positive (right) skew.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HISTOGRAM -->
+<section class="histogram-section" id="histogram">
+  <div class="page">
+    <div class="reveal">
+      <span class="sec-label">Section 1.6</span>
+      <h2 class="sec-title" style="color:#fff;">Histogram</h2>
+      <div class="divider"></div>
+      <p style="color:rgba(255,255,255,0.6);max-width:680px;line-height:1.8;font-size:0.95rem;">A <strong style="color:#f0b429">Histogram</strong> is a bar graph showing the <strong>frequency distribution</strong> of continuous data. The horizontal axis represents class intervals (bins) and the vertical axis shows frequency (count) or relative frequency. Unlike bar charts, the bars are adjacent (touching) since the data is continuous. The shape of a histogram reveals the distribution's symmetry, skewness, and modality.</p>
+    </div>
+    <div class="hist-wrap reveal" id="histWrap"></div>
+    <div class="hist-x-labels reveal" id="histLabels"></div>
+    <p style="color:rgba(255,255,255,0.35);font-size:0.78rem;font-family:'Space Mono',monospace;margin-top:0.5rem;padding:0 1rem;">← Class Intervals (e.g., marks: 0–10, 10–20 …) · Each bar = frequency of that interval →</p>
+  </div>
+</section>
+
+<!-- SKEWNESS -->
+<section class="skew-section" id="skewness">
+  <div class="page">
+    <div class="reveal">
+      <span class="sec-label">Section 1.7</span>
+      <h2 class="sec-title">Skewness</h2>
+      <div class="divider"></div>
+      <p style="max-width:720px;line-height:1.8;color:#3a3530;font-size:0.95rem;margin-bottom:2rem;"><strong>Skewness</strong> measures the asymmetry of a distribution. It tells us whether the tail of the distribution is stretched to the left or right of the peak. Karl Pearson's coefficient: <strong>Sk = 3(Mean − Median) / σ</strong>. A symmetric distribution has Sk = 0.</p>
+    </div>
+    <div class="skew-grid">
+      <div class="skew-card reveal">
+        <svg class="skew-curve" viewBox="0 0 200 80">
+          <path d="M10,70 Q30,10 80,20 Q120,30 190,68" fill="none" stroke="#e84d2a" stroke-width="3"/>
+          <line x1="80" y1="20" x2="80" y2="70" stroke="#e84d2a" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="75" y="16" font-size="9" fill="#e84d2a" font-family="Space Mono">Mode</text>
+          <text x="30" y="60" font-size="8" fill="#888" font-family="Space Mono">long tail →</text>
+        </svg>
+        <h4>Positive (Right) Skew</h4>
+        <p>Tail extends to the right. Mean &gt; Median &gt; Mode. Common in income distributions, house prices. Most data is clustered at lower values with few very high outliers pulling the mean rightward.</p>
+        <span class="formula-chip" style="background:rgba(232,77,42,0.1);border-color:rgba(232,77,42,0.3);color:#e84d2a;">Sk &gt; 0</span>
+      </div>
+      <div class="skew-card reveal" style="animation-delay:0.1s">
+        <svg class="skew-curve" viewBox="0 0 200 80">
+          <path d="M10,68 Q60,15 100,12 Q140,15 190,68" fill="none" stroke="#0d9488" stroke-width="3"/>
+          <line x1="100" y1="12" x2="100" y2="70" stroke="#0d9488" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="88" y="9" font-size="9" fill="#0d9488" font-family="Space Mono">Mean=Med</text>
+        </svg>
+        <h4>Symmetric (Normal)</h4>
+        <p>The distribution is perfectly balanced. Mean = Median = Mode. The bell-shaped Normal distribution is the most important symmetric distribution in statistics and forms the basis for many hypothesis tests.</p>
+        <span class="formula-chip" style="background:rgba(13,148,136,0.1);border-color:rgba(13,148,136,0.3);color:#0d9488;">Sk = 0</span>
+      </div>
+      <div class="skew-card reveal" style="animation-delay:0.2s">
+        <svg class="skew-curve" viewBox="0 0 200 80">
+          <path d="M10,68 Q80,30 120,20 Q170,10 190,70" fill="none" stroke="#1d4ed8" stroke-width="3"/>
+          <line x1="120" y1="20" x2="120" y2="70" stroke="#1d4ed8" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="100" y="16" font-size="9" fill="#1d4ed8" font-family="Space Mono">Mode</text>
+          <text x="100" y="60" font-size="8" fill="#888" font-family="Space Mono">← long tail</text>
+        </svg>
+        <h4>Negative (Left) Skew</h4>
+        <p>Tail extends to the left. Mean &lt; Median &lt; Mode. Occurs when most values are high and a few extremely low outliers drag the mean leftward. Common in exam scores when most students score high.</p>
+        <span class="formula-chip" style="background:rgba(29,78,216,0.1);border-color:rgba(29,78,216,0.3);color:#1d4ed8;">Sk &lt; 0</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QQ PLOT -->
+<section class="qq-section" id="qqplot">
+  <div class="page">
+    <div class="qq-grid">
+      <div class="qq-text reveal">
+        <span class="sec-label">Section 1.8</span>
+        <h2 class="sec-title">Normal Q-Q Plot</h2>
+        <div class="divider"></div>
+        <p>A <strong style="color:#e84d2a">Normal Quantile-Quantile (Q-Q) Plot</strong> is a graphical tool to assess whether a dataset follows a Normal distribution. It plots the quantiles of the observed data (y-axis) against the theoretical quantiles of a Normal distribution (x-axis).</p>
+        <p><strong style="color:#f0b429">How to read it:</strong> If the data is approximately Normal, the points will fall close to the <em>reference diagonal line</em>. Deviations from this line reveal departures from Normality — such as heavy tails, light tails, or skewness.</p>
+        <p>S-shaped curves indicate skewness; curves bending above or below the line suggest heavy or light tails (kurtosis). The Q-Q plot is widely used before applying tests that assume Normality (t-test, ANOVA).</p>
+      </div>
+      <div class="reveal">
+        <div class="qq-plot-wrap">
+          <svg class="qq-plot" viewBox="0 0 280 240" xmlns="http://www.w3.org/2000/svg">
+            <!-- axes -->
+            <line x1="40" y1="200" x2="260" y2="200" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+            <line x1="40" y1="20" x2="40" y2="200" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+            <!-- reference line -->
+            <line x1="50" y1="190" x2="250" y2="30" stroke="rgba(240,180,41,0.5)" stroke-width="1.5" stroke-dasharray="6,4"/>
+            <!-- data points (approx normal) -->
+            <circle cx="60" cy="185" r="4" fill="#0d9488" opacity="0.9"/>
+            <circle cx="80" cy="168" r="4" fill="#0d9488" opacity="0.9"/>
+            <circle cx="100" cy="150" r="4" fill="#0d9488" opacity="0.9"/>
+            <circle cx="120" cy="132" r="4" fill="#0d9488" opacity="0.9"/>
+            <circle cx="140" cy="115" r="4" fill="#0d9488" opacity="0.9"/>
+            <circle cx="160" cy="100" r="4" fill="#0d9488" opacity="0.9"/>
+            <circle cx="180" cy="83" r="4" fill="#0d9488" opacity="0.9"/>
+            <circle cx="200" cy="66" r="4" fill="#0d9488" opacity="0.9"/>
+            <circle cx="220" cy="50" r="4" fill="#0d9488" opacity="0.9"/>
+            <circle cx="235" cy="38" r="4" fill="#e84d2a" opacity="0.9"/>
+            <!-- axis labels -->
+            <text x="150" y="220" text-anchor="middle" font-family="Space Mono" font-size="9" fill="rgba(255,255,255,0.4)">Theoretical Quantiles</text>
+            <text x="14" y="110" text-anchor="middle" font-family="Space Mono" font-size="9" fill="rgba(255,255,255,0.4)" transform="rotate(-90,14,110)">Sample Quantiles</text>
+            <text x="242" y="34" font-family="Space Mono" font-size="8" fill="#e84d2a">outlier</text>
+          </svg>
+          <p style="font-size:0.75rem;color:rgba(255,255,255,0.35);text-align:center;margin-top:0.5rem;font-family:'Space Mono',monospace;">Most points on the reference line → approximately Normal</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CV SECTION -->
+<section class="cv-section">
+  <div class="page">
+    <div class="reveal">
+      <span class="sec-label">Section 1.9</span>
+      <h2 class="sec-title">Coefficient of Variation &<br>Relative Measures</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="cv-cards">
+      <div class="cv-card reveal">
+        <h3>Coefficient of Variation (CV)</h3>
+        <p>CV = (Standard Deviation / Mean) × 100%. It is a <strong>relative measure of dispersion</strong> — dimensionless, so it allows comparison of variability across datasets with different units or magnitudes. A lower CV indicates more consistency; a higher CV indicates more variability.</p>
+        <div class="cv-bar-wrap">
+          <div class="cv-bar-label"><span>Dataset A (Scores)</span><span>CV = 12%</span></div>
+          <div class="cv-bar-track"><div class="cv-bar-fill" style="width:12%;background:linear-gradient(to right,#0d9488,#0d9488aa)"></div></div>
+          <div class="cv-bar-label"><span>Dataset B (Times)</span><span>CV = 34%</span></div>
+          <div class="cv-bar-track"><div class="cv-bar-fill" style="width:34%;background:linear-gradient(to right,#f0b429,#f0b42988)"></div></div>
+          <div class="cv-bar-label"><span>Dataset C (Prices)</span><span>CV = 58%</span></div>
+          <div class="cv-bar-track"><div class="cv-bar-fill" style="width:58%;background:linear-gradient(to right,#e84d2a,#e84d2a88)"></div></div>
+        </div>
+        <p style="margin-top:1rem;font-size:0.82rem;color:var(--muted);">Dataset A is most consistent (low CV). Dataset C is most variable.</p>
+      </div>
+      <div class="cv-card v2 reveal">
+        <h3>Summary: All Measures at a Glance</h3>
+        <p style="margin-bottom:1rem;">All the key descriptive statistics work together to give a complete picture of any dataset:</p>
+        <table style="width:100%;font-size:0.82rem;border-collapse:collapse;">
+          <thead>
+            <tr style="border-bottom:2px solid #e0d8ce;">
+              <th style="text-align:left;padding:6px 4px;color:#0d9488;">Measure</th>
+              <th style="text-align:left;padding:6px 4px;color:#0d9488;">What it tells</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #f0ebe3;"><td style="padding:6px 4px;font-weight:600;">Mean</td><td style="padding:6px 4px;color:#555;">Center of gravity</td></tr>
+            <tr style="border-bottom:1px solid #f0ebe3;"><td style="padding:6px 4px;font-weight:600;">Median</td><td style="padding:6px 4px;color:#555;">Middle value, robust center</td></tr>
+            <tr style="border-bottom:1px solid #f0ebe3;"><td style="padding:6px 4px;font-weight:600;">Std. Dev.</td><td style="padding:6px 4px;color:#555;">Typical distance from mean</td></tr>
+            <tr style="border-bottom:1px solid #f0ebe3;"><td style="padding:6px 4px;font-weight:600;">IQR</td><td style="padding:6px 4px;color:#555;">Spread of middle 50%</td></tr>
+            <tr style="border-bottom:1px solid #f0ebe3;"><td style="padding:6px 4px;font-weight:600;">Skewness</td><td style="padding:6px 4px;color:#555;">Asymmetry of distribution</td></tr>
+            <tr><td style="padding:6px 4px;font-weight:600;">CV</td><td style="padding:6px 4px;color:#555;">Relative variability (%)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>Chapter 1 · Description of Data · <span>Probability & Statistics</span> · 25EMAB104</p>
+  <p style="margin-top:0.5rem;opacity:0.5;">Unit I · 10 Hours · ISA: 50 · ESA: 50 · Total: 100 Marks</p>
+</footer>
+
+<script>
+// ── Particles ──
+(function(){
+  const container = document.getElementById('particles');
+  const colors = ['#f0b429','#0d9488','#e84d2a','#1d4ed8','#8b5cf6'];
+  for(let i=0;i<22;i++){
+    const p = document.createElement('div');
+    p.classList.add('particle');
+    const size = 8 + Math.random()*28;
+    p.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${8+Math.random()*18}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    container.appendChild(p);
+  }
+})();
+
+// ── Mean demo ──
+(function(){
+  const scores = [72, 85, 63, 90, 78, 55, 88, 76];
+  const colors = ['#e84d2a','#f0b429','#0d9488','#1d4ed8','#8b5cf6','#ec4899','#14b8a6','#f97316'];
+  const ballWrap = document.getElementById('numBalls');
+  const resultEl = document.getElementById('meanResult');
+  scores.forEach((s,i)=>{
+    const div = document.createElement('div');
+    div.classList.add('num-ball');
+    div.style.cssText = `background:${colors[i]};animation-delay:${0.1+i*0.1}s`;
+    div.textContent = s;
+    ballWrap.appendChild(div);
+  });
+  const sum = scores.reduce((a,b)=>a+b,0);
+  const mean = (sum/scores.length).toFixed(2);
+  resultEl.innerHTML = `Mean = (${scores.join(' + ')}) ÷ ${scores.length} = <strong>${sum}</strong> ÷ <strong>${scores.length}</strong> = <strong style="color:#0d9488;font-size:1.1em">${mean}</strong>`;
+})();
+
+// ── Histogram ──
+(function(){
+  const wrap = document.getElementById('histWrap');
+  const labels = document.getElementById('histLabels');
+  const freqs = [3,7,14,20,25,22,16,10,6,2];
+  const intervals = ['0–10','10–20','20–30','30–40','40–50','50–60','60–70','70–80','80–90','90–100'];
+  const gradients = [
+    ['#f0b429','#e84d2a'],['#e84d2a','#ec4899'],['#ec4899','#8b5cf6'],
+    ['#8b5cf6','#1d4ed8'],['#1d4ed8','#0d9488'],['#0d9488','#14b8a6'],
+    ['#14b8a6','#0d9488'],['#1d4ed8','#8b5cf6'],['#8b5cf6','#ec4899'],['#ec4899','#f0b429']
+  ];
+  const maxF = Math.max(...freqs);
+  freqs.forEach((f,i)=>{
+    const h = Math.round((f/maxF)*170);
+    const bar = document.createElement('div');
+    bar.classList.add('hist-bar');
+    bar.style.cssText = `height:${h}px;background:linear-gradient(to top,${gradients[i][0]},${gradients[i][1]});animation-delay:${0.05+i*0.08}s`;
+    bar.innerHTML = `<span class="bar-label">${f}</span>`;
+    bar.title = `Interval: ${intervals[i]}, Frequency: ${f}`;
+    wrap.appendChild(bar);
+
+    const lbl = document.createElement('span');
+    lbl.textContent = intervals[i];
+    labels.appendChild(lbl);
+  });
+})();
+
+// ── Scroll Reveal ──
+(function(){
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  },{threshold:0.12});
+  items.forEach(el=>io.observe(el));
+})();
+</script>
+</body>
+</html>
